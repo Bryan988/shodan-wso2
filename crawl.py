@@ -31,7 +31,7 @@ for service in result['matches']:
     #The script does not yet allow to filter the right port. 
     # Need to add the check on services in order to get the right port	
     try:
-	if result['ssl']:
+	if service['ssl']:
         	url = "https://" + service['ip_str'].rstrip() + ":" + str(service['port'])	
 	except:
 		url = "http://" + service['ip_str'].rstrip() + ":" + str(service['port'])
